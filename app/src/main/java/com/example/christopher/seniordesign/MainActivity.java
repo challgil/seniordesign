@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
             latitude = addresses.get(0).getLatitude();
         }
         if(longitude != null && latitude != null) {
-            display.add(longitude.toString() + latitude.toString());
-            ArrayAdapter<String> that = new ArrayAdapter<String>(this, R.layout.activity_main, R.id.disp, display);
+            display.add(longitude.toString() + " " + latitude.toString());
+            ArrayAdapter<String> that = new ArrayAdapter<String>(this, R.layout.list_item, R.id.list_view_item, display);
             disp.setAdapter(that);
             address.setText("");
         }
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             disp.setAdapter(that);
             address.setText("");
         }
+        sendLoc(longitude, latitude);
     }
 
     public void sendLoc(Double longitude, Double latitude){

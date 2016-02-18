@@ -12,22 +12,17 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/addressInput" />
+        android:id="@+id/addressInput"
+        android:hint="Input the destination address"/>
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/instructions"
-        android:text="Input the address you would like to go to."
-        android:layout_below="@id/addressInput"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Navigate"
+        android:text="Enter Address"
+        android:backgroundTint="#dedede"
         android:id="@+id/navButton"
-        android:layout_below="@id/instructions"
+        android:layout_below="@id/addressInput"
         android:onClick="getLoc"/>
 
     <ListView
