@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private Geocoder geocoder;
     EditText address;
     ListView disp;
+    ListView disp2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         geocoder = new Geocoder(this);
         disp = (ListView) findViewById(R.id.disp);
+      //  disp2 = (ListView) findViewById(R.id.disp2);
     }
 
     public void getLoc(View view){
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             if(latitude <= 0){ latString = "S" + Double.toString(-1*latitude);}
 
         }
-        if(longitude != null && latitude != null) {
+/*        if(longitude != null && latitude != null) {
             display.add(latString + " " + longString);
             ArrayAdapter<String> that = new ArrayAdapter<String>(this, R.layout.list_item, R.id.list_view_item, display);
             disp.setAdapter(that);
@@ -69,14 +71,14 @@ public class MainActivity extends AppCompatActivity {
             disp.setAdapter(that);
             address.setText("");
         }
-        sendLoc(longString, latString);
+ */       sendLoc(longString, latString);
     }
 
     public void sendLoc(String longitude, String latitude){
         BluetoothAdapter bAdapter = BluetoothAdapter.getDefaultAdapter();
         BluetoothDevice bDevice;
         ArrayList<BluetoothDevice> list = new ArrayList<BluetoothDevice>();
-        ArrayAdapter<String> pairedDeviceArray = new ArrayAdapter<String>(this, R.layout.device_selection);
+        ArrayAdapter<String> pairedDeviceArray = new ArrayAdapter<String>(this, R.layout.list_item, R.id.list_view_item);
         if (bAdapter == null) {
             return;
         }
@@ -92,10 +94,10 @@ public class MainActivity extends AppCompatActivity {
             for (BluetoothDevice device : pairedDevices) {
                 // Add the name and address to an array adapter to show in a ListView
                 pairedDeviceArray.add(device.getName() + "\n" + device.getAddress());
-                list.add(device);
             }
         }
-        if(list.size() > 0){ bDevice = list.get(0);}
+      //  if(list.size() > 0){ bDevice = list.get(0);}
+        disp.setAdapter(pairedDeviceArray);
 
     }
 }

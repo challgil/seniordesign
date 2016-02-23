@@ -30,6 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/navButton"
         android:id="@+id/disp">
-
     </ListView>
+
 </RelativeLayout>
