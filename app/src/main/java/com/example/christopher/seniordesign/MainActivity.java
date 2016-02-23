@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
         String addressString = address.getText().toString();
         Double longitude = null;
         Double latitude = null;
+        String longString = new String();
+        String latString = new String();
 
         try {
             addresses = geocoder.getFromLocationName(addressString, 1);
@@ -49,9 +51,14 @@ public class MainActivity extends AppCompatActivity {
         if(addresses.size() > 0) {
             longitude = addresses.get(0).getLongitude();
             latitude = addresses.get(0).getLatitude();
+            if(longitude > 0){ longString = "E" +  Double.toString(longitude);}
+            else if(longitude <= 0 ){ longString = "W" + Double.toString(-1*longitude);}
+            if(latitude > 0){ latString = "N" + Double.toString(latitude);}
+            if(latitude <= 0){ latString = "S" + Double.toString(-1*latitude);}
+
         }
         if(longitude != null && latitude != null) {
-            display.add(longitude.toString() + " " + latitude.toString());
+            display.add(latString + " " + longString);
             ArrayAdapter<String> that = new ArrayAdapter<String>(this, R.layout.list_item, R.id.list_view_item, display);
             disp.setAdapter(that);
             address.setText("");
@@ -62,11 +69,13 @@ public class MainActivity extends AppCompatActivity {
             disp.setAdapter(that);
             address.setText("");
         }
-        sendLoc(longitude, latitude);
+        sendLoc(longString, latString);
     }
 
-    public void sendLoc(Double longitude, Double latitude){
+    public void sendLoc(String longitude, String latitude){
         BluetoothAdapter bAdapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothDevice bDevice;
+        ArrayList<BluetoothDevice> list = new ArrayList<BluetoothDevice>();
         ArrayAdapter<String> pairedDeviceArray = new ArrayAdapter<String>(this, R.layout.device_selection);
         if (bAdapter == null) {
             return;
@@ -83,9 +92,10 @@ public class MainActivity extends AppCompatActivity {
             for (BluetoothDevice device : pairedDevices) {
                 // Add the name and address to an array adapter to show in a ListView
                 pairedDeviceArray.add(device.getName() + "\n" + device.getAddress());
+                list.add(device);
             }
         }
-
+        if(list.size() > 0){ bDevice = list.get(0);}
 
     }
 }
