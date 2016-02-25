@@ -61,11 +61,8 @@ public class MainActivity extends AppCompatActivity {
         if(addresses.size() > 0) {
             longitude = addresses.get(0).getLongitude();
             latitude = addresses.get(0).getLatitude();
-            if(longitude > 0){ longString = "E" +  Double.toString(longitude);}
-            else if(longitude <= 0 ){ longString = "W" + Double.toString(-1*longitude);}
-            if(latitude > 0){ latString = "N" + Double.toString(latitude);}
-            if(latitude <= 0){ latString = "S" + Double.toString(-1*latitude);}
-
+            longString = Double.toString(longitude);
+            latString = Double.toString(latitude);
         }
         sendLoc(longString, latString);
     }
