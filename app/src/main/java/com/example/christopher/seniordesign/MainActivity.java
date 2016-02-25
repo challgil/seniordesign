@@ -8,10 +8,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -24,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Address> addresses;
     private Geocoder geocoder;
+    private BluetoothSocket mmSocket;
+    private BluetoothDevice mmDevice;
     EditText address;
     ListView disp;
     ListView disp2;
@@ -59,25 +65,13 @@ public class MainActivity extends AppCompatActivity {
             if(latitude <= 0){ latString = "S" + Double.toString(-1*latitude);}
 
         }
-/*        if(longitude != null && latitude != null) {
-            display.add(latString + " " + longString);
-            ArrayAdapter<String> that = new ArrayAdapter<String>(this, R.layout.list_item, R.id.list_view_item, display);
-            disp.setAdapter(that);
-            address.setText("");
-        }
-        else{
-            display.add("Something went wrong! " + addressString);
-            ArrayAdapter<String> that = new ArrayAdapter<String>(this, R.layout.list_item, R.id.list_view_item, display);
-            disp.setAdapter(that);
-            address.setText("");
-        }
- */       sendLoc(longString, latString);
+        sendLoc(longString, latString);
     }
 
-    public void sendLoc(String longitude, String latitude){
-        BluetoothAdapter bAdapter = BluetoothAdapter.getDefaultAdapter();
-        BluetoothDevice bDevice;
-        ArrayList<BluetoothDevice> list = new ArrayList<BluetoothDevice>();
+    public void sendLoc(final String longitude, final String latitude){
+        final BluetoothAdapter bAdapter = BluetoothAdapter.getDefaultAdapter();
+        final BluetoothDevice bDevice;
+        final ArrayList<BluetoothDevice> list = new ArrayList<BluetoothDevice>();
         ArrayAdapter<String> pairedDeviceArray = new ArrayAdapter<String>(this, R.layout.list_item, R.id.list_view_item);
         if (bAdapter == null) {
             return;
@@ -94,10 +88,69 @@ public class MainActivity extends AppCompatActivity {
             for (BluetoothDevice device : pairedDevices) {
                 // Add the name and address to an array adapter to show in a ListView
                 pairedDeviceArray.add(device.getName() + "\n" + device.getAddress());
+                list.add(device);
             }
         }
       //  if(list.size() > 0){ bDevice = list.get(0);}
         disp.setAdapter(pairedDeviceArray);
+        disp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mmDevice = list.get(position);
+                bAdapter.cancelDiscovery();
+                try {
+                    // MY_UUID is the app's UUID string, also used by the server code
+                    mmSocket = mmDevice.createRfcommSocketToServiceRecord(mmDevice.getUuids()[0].getUuid());
+                } catch (IOException e) {
+                }
+                try {
+                    // Connect the device through the socket. This will block
+                    // until it succeeds or throws an exception
+                    mmSocket.connect();
+                } catch (IOException connectException) {
+                    // Unable to connect; close the socket and get out
+                    try {
+                        mmSocket.close();
+                    } catch (IOException closeException) { }
+                    return;
+                }
+                String destination = longitude + " " + latitude;
+                manageConnectedSocket(destination);
+            }
+        });
+        /*
+        bAdapter.cancelDiscovery();
+        try {
+            // Connect the device through the socket. This will block
+            // until it succeeds or throws an exception
+            mmSocket.connect();
+        } catch (IOException connectException) {
+            // Unable to connect; close the socket and get out
+            try {
+                mmSocket.close();
+            } catch (IOException closeException) { }
+            return;
+        }
+
+        // Do work to manage the connection (in a separate thread)
+        String destination = longitude + " " + latitude;
+        manageConnectedSocket(destination);
+        */
+    }
+
+    void manageConnectedSocket(String msg){
+        InputStream inStream = null;
+        OutputStream outStream = null;
+
+        // Get the input and output streams
+        try {
+            inStream = mmSocket.getInputStream();
+            outStream = mmSocket.getOutputStream();
+        } catch (IOException e) { }
+        byte[] bytes = msg.getBytes();
+        try {
+            outStream.write(bytes);
+        } catch(IOException e){}
     }
 }
