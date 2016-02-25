@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private Geocoder geocoder;
     private BluetoothSocket mmSocket;
     private BluetoothDevice mmDevice;
+    OutputStream outStream = null;
     EditText address;
     ListView disp;
     ListView disp2;
@@ -113,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
                     // Unable to connect; close the socket and get out
                     try {
                         mmSocket.close();
-                    } catch (IOException closeException) { }
+                    } catch (IOException closeException) {
+                    }
                     return;
                 }
                 String destination = longitude + " " + latitude;
@@ -141,14 +143,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void manageConnectedSocket(String msg){
-        InputStream inStream = null;
-        OutputStream outStream = null;
 
         // Get the input and output streams
         try {
-            inStream = mmSocket.getInputStream();
             outStream = mmSocket.getOutputStream();
         } catch (IOException e) { }
+        msg = msg + "\n";
         byte[] bytes = msg.getBytes();
         try {
             outStream.write(bytes);
